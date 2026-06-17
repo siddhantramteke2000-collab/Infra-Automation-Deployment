@@ -1,0 +1,9 @@
+stages :
+-stage 
+
+jobs : TerraformInit
+-job1
+
+steps :
+step1
+script : terraform init
