@@ -35,3 +35,23 @@ module "azurerm_subnet" {
   vn-name          = each.value.virtual_network_name
   address_prefixes = each.value.address_prefixes
 }
+
+module "azurerm_network_interface" {
+  source                        = "../../modules/azurerm_nic"
+  depends_on                    = [module.azurerm_subnet]
+  for_each                      = var.nic
+  name                          = each.value.name
+  location                      = each.value.location
+  resource_group_name           = each.value.resource_group_name
+  ip_name                       = each.value.ip_name
+  private_ip_address_allocation = each.value.private_ip_address_allocation
+  subnet_id                     = module.azurerm_subnet[each.value.subnet_key].subnet_id
+}
+
+module "azurerm_network_security_group" {
+  source              = "../../modules/azurerm_nsg"
+  for_each            = var.nsg
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+}
