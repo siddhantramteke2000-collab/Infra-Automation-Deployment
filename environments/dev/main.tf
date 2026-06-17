@@ -36,6 +36,15 @@ module "azurerm_subnet" {
   address_prefixes = each.value.address_prefixes
 }
 
+module "azurerm_network_security_group" {
+  source              = "../../modules/azurerm_nsg"
+  depends_on          = [module.azurerm_resource_group]
+  for_each            = var.nsg
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+}
+
 module "azurerm_network_interface" {
   source                        = "../../modules/azurerm_nic"
   depends_on                    = [module.azurerm_resource_group, module.azurerm_subnet]
@@ -48,11 +57,3 @@ module "azurerm_network_interface" {
   subnet_id                     = module.azurerm_subnet[each.value.subnet_key].subnet_id
 }
 
-module "azurerm_network_security_group" {
-  source              = "../../modules/azurerm_nsg"
-  depends_on          = [module.azurerm_resource_group]
-  for_each            = var.nsg
-  name                = each.value.name
-  location            = each.value.location
-  resource_group_name = each.value.resource_group_name
-}
