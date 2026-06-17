@@ -28,7 +28,7 @@ module "azurerm_virtual_network" {
 
 module "azurerm_subnet" {
   source           = "../../modules/azurerm_subnet"
-  depends_on       = [module.azurerm_virtual_network]
+  depends_on       = [module.azurerm_resource_group, module.azurerm_virtual_network]
   for_each         = var.subnet
   sub-name         = each.value.name
   rg-name          = each.value.resource_group_name
@@ -38,7 +38,7 @@ module "azurerm_subnet" {
 
 module "azurerm_network_interface" {
   source                        = "../../modules/azurerm_nic"
-  depends_on                    = [module.azurerm_subnet]
+  depends_on                    = [module.azurerm_resource_group, module.azurerm_subnet]
   for_each                      = var.nic
   name                          = each.value.name
   location                      = each.value.location
@@ -50,6 +50,7 @@ module "azurerm_network_interface" {
 
 module "azurerm_network_security_group" {
   source              = "../../modules/azurerm_nsg"
+  depends_on          = [module.azurerm_resource_group]
   for_each            = var.nsg
   name                = each.value.name
   location            = each.value.location
